@@ -1,5 +1,5 @@
 ---
-name: init-project-rules
+name: init-project
 description: Scaffolds or integrates AI agent rules into a project. Clones rules from the agent-rules repository, generates CLAUDE.md/AGENTS.md tailored to the stack. For new projects, it interviews the user. For existing projects, it analyzes the stack, adds the rules, and proposes a step-by-step refactoring plan to align the codebase with the chosen architectural rules using a TODO.md checklist. Trigger when the user wants to start a new project, format an existing project, or initialize rules.
 ---
 
