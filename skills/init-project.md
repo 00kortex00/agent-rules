@@ -26,9 +26,30 @@ Rules are cloned from `github.com/00kortex00/agent-rules` into `.agents/rules/` 
 Before anything else, determine which mode to run:
 
 1. If the user explicitly says "update" or "update rules" → **Update mode** (jump to Step 7)
-2. Else if `.agents/rules/` already exists → ask: "Found existing rules. Do you want to update them from GitHub, or re-initialize?"
-3. Else if the directory has source files (`package.json`, etc.) → **Existing project mode**
-4. Else → **New project mode**
+2. If the user explicitly says "audit" → **Audit mode** (jump to Step 8)
+3. Else if `.agents/rules/` already exists:
+   - Check whether the project is **fully initialized**: does `docs/` exist AND at least one IDE adapter file (`CLAUDE.md`, `.github/copilot-instructions.md`, or `.cursor/rules/`) exist?
+   - If **fully initialized** → show the extended menu (see below) and wait for the user's choice
+   - If **not fully initialized** (rules exist but docs/IDE files are missing) → ask: "Found existing rules but setup looks incomplete. Do you want to finish initialization or update rules from GitHub?"
+4. Else if the directory has source files (`package.json`, etc.) → **Existing project mode**
+5. Else → **New project mode**
+
+### Extended menu (fully initialized project)
+
+```
+Found existing agent setup. What would you like to do?
+
+1. Update rules       — pull latest rules from GitHub, regenerate all IDE adapter files
+2. Audit project      — analyze codebase against current rules, find gaps, write/update docs/
+3. Regenerate IDE files — re-generate CLAUDE.md / Copilot / Cursor files from .agents/rules/ (no GitHub fetch)
+4. Re-initialize      — start fresh, re-interview stack and conventions
+```
+
+Wait for the user's choice:
+- **1** → **Update mode** (jump to Step 7)
+- **2** → **Audit mode** (jump to Step 8)
+- **3** → Run **Step 5** only (skip clone and project.md generation)
+- **4** → **New project mode** (Step 1 from scratch)
 
 ## Overview of steps
 
@@ -39,6 +60,7 @@ Before anything else, determine which mode to run:
 5. Generate IDE adapter files
 6. Existing Project Audit & Refactoring (if applicable)
 7. Update rules (Update mode only)
+8. Audit mode (fully initialized project)
 
 ---
 
@@ -72,6 +94,7 @@ If backend:
 - Database? (default: Drizzle + PostgreSQL — mention this)
 
 **Always ask:**
+- Should the agent **auto-commit** after each completed step? (default: no — mention this, explain it means one commit per TODO step, local only, no push)
 - Anything custom about this project that the agent should know? (team conventions, specific constraints, etc.)
 
 Present defaults clearly — the user can just confirm them or pick something else. Keep it conversational, not a form.
@@ -103,6 +126,7 @@ Conditionally include:
 | has backend | `backend/structure.md`, `backend/api-design.md` |
 | backend = Elysia | `backend/elysia.md` |
 | database = Drizzle | `backend/database-drizzle.md` |
+| user said yes to auto-commit | `general/git-autocommit.md` |
 
 ---
 
@@ -317,6 +341,69 @@ rm -rf _tmp
 With the updated rule files in place, regenerate every IDE adapter file following the same logic as Step 5 (5a through 5c). Overwrite the existing files completely — do not merge or diff.
 
 `project.md` is never overwritten.
+
+---
+
+## Step 8 — Audit mode
+
+This mode is for **fully initialized projects** where rules and IDE files are already in place. Goal: analyze the codebase against current rules, find gaps, and produce or update documentation.
+
+### 8a. Load context
+
+Read `.agents/rules/project.md` to understand the project's declared stack, architecture, and conventions. Collect the list of all rule files in `.agents/rules/`.
+
+### 8b. Analyze the codebase
+
+Silently scan the project against the loaded rules. Look for:
+- Code style violations (import order, naming, `import type`, magic numbers, etc.)
+- Architectural inconsistencies (e.g., feature logic in wrong layer, missing index files)
+- Security concerns from `general/security.md`
+- Missing or stale `docs/` files
+
+### 8c. Check documentation coverage
+
+Verify which `docs/` files exist and whether they reflect the current state of the project:
+
+| Expected file | Purpose |
+|---|---|
+| `docs/architecture.md` | High-level structure, layers, data flow |
+| `docs/state.md` | State management approach (if frontend) |
+| `docs/api.md` | API overview (if backend) |
+| `docs/TODO.md` | Active task checklist |
+
+Note which files are missing or likely outdated.
+
+### 8d. Present audit report
+
+Show a short report:
+
+```
+## Audit Report
+
+### Code quality gaps
+- <issue 1 with file reference>
+- <issue 2>
+...
+
+### Documentation gaps
+- docs/architecture.md — missing
+- docs/TODO.md — missing
+...
+
+### Proposed plan
+1. <action 1>
+2. <action 2>
+...
+```
+
+Ask for approval before making any changes.
+
+### 8e. Execute (after approval)
+
+1. Create or update `docs/TODO.md` with the full checklist of proposed actions (mark items that are already done).
+2. Write any missing `docs/` files based on codebase analysis.
+3. Fix critical code issues if user confirms (otherwise leave them in `docs/TODO.md` for manual follow-up).
+4. Always follow `general/workflow.md` — make incremental changes, not a big-bang rewrite.
 
 ### 7d. Confirm
 
