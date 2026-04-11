@@ -21,7 +21,7 @@ Rules are cloned from `github.com/00kortex00/agent-rules` into `.agents/rules/` 
 | Copilot | `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md` | inlined content with `applyTo` frontmatter |
 | Cursor | `.cursor/rules/*.mdc` | inlined content with `alwaysApply`/`globs` frontmatter |
 | Windsurf | `.windsurfrules` | all rules concatenated inline |
-| Other agents | `AGENTS.md` | all rules concatenated inline |
+| Other agents | `AGENTS.md` | `@file` references — same as CLAUDE.md |
 
 ## Mode detection (do this first)
 
@@ -197,19 +197,23 @@ List only the rules that were actually cloned. No globs.
 
 ### 5b. AGENTS.md
 
-Other agents (OpenAI Codex, Gemini, etc.) do not expand `@` references, so inline all rule content:
+Use the same `@file` reference format as CLAUDE.md — `.agents/rules/` is the single source of truth and agents that read `AGENTS.md` can resolve references from there:
 
 ```markdown
 # AGENTS.md
 
-<!-- project -->
-<body of project.md>
-
-<!-- general/code-style -->
-<body of general/code-style.md>
-
-<!-- … repeat for each cloned rule in order … -->
+@.agents/rules/project.md
+@.agents/rules/general/code-style.md
+@.agents/rules/general/git.md
+@.agents/rules/general/security.md
+@.agents/rules/general/testing.md
+@.agents/rules/general/tooling.md
+@.agents/rules/general/scaffolding.md
+@.agents/rules/general/workflow.md
+<additional rules based on selection>
 ```
+
+List only the rules that were actually cloned. No globs.
 
 ---
 
