@@ -17,11 +17,9 @@ Rules are cloned from `github.com/00kortex00/agent-rules` into `.agents/rules/` 
 
 | Tool | File(s) | How rules land |
 |---|---|---|
-| Claude CLI | `CLAUDE.md` | `@file` references — natively expanded |
+| Claude CLI | `CLAUDE.md` | `@file` annotations only — never inline content |
 | Copilot | `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md` | inlined content with `applyTo` frontmatter |
 | Cursor | `.cursor/rules/*.mdc` | inlined content with `alwaysApply`/`globs` frontmatter |
-| Windsurf | `.windsurfrules` | all rules concatenated inline |
-| Other agents | `AGENTS.md` | `@file` references — same as CLAUDE.md |
 
 ## Mode detection (do this first)
 
@@ -175,7 +173,7 @@ description: Project-specific context and conventions
 
 ### 5a. CLAUDE.md
 
-Use `@file` references — Claude CLI expands them natively:
+`CLAUDE.md` must contain **only `@file` annotations** — one per rule. Do **not** inline any rule content here. Claude CLI expands these references natively, so the file stays short regardless of how many rules there are.
 
 ```markdown
 # CLAUDE.md
@@ -191,33 +189,11 @@ Use `@file` references — Claude CLI expands them natively:
 <additional rules based on selection>
 ```
 
-List only the rules that were actually cloned. No globs.
+List only the rules that were actually cloned. No globs. The file must never exceed ~20 lines.
 
 ---
 
-### 5b. AGENTS.md
-
-Use the same `@file` reference format as CLAUDE.md — `.agents/rules/` is the single source of truth and agents that read `AGENTS.md` can resolve references from there:
-
-```markdown
-# AGENTS.md
-
-@.agents/rules/project.md
-@.agents/rules/general/code-style.md
-@.agents/rules/general/git.md
-@.agents/rules/general/security.md
-@.agents/rules/general/testing.md
-@.agents/rules/general/tooling.md
-@.agents/rules/general/scaffolding.md
-@.agents/rules/general/workflow.md
-<additional rules based on selection>
-```
-
-List only the rules that were actually cloned. No globs.
-
----
-
-### 5c. GitHub Copilot
+### 5b. GitHub Copilot
 
 Copilot reads `.github/copilot-instructions.md` as persistent context and auto-loads `.github/instructions/*.instructions.md` files based on `applyTo` patterns.
 
@@ -251,7 +227,7 @@ The `apps/web` and `apps/api` paths should match the actual workspace structure 
 
 ---
 
-### 5d. Cursor
+### 5c. Cursor
 
 Create `.cursor/rules/<name>.mdc` for each cloned rule (except `project.md`):
 
@@ -277,24 +253,6 @@ globs: ["apps/web/**"]   # or apps/api/** for backend rules
 
 ---
 
-### 5e. Windsurf
-
-Concatenate all rule bodies (in the same order as CLAUDE.md, project first) into a single `.windsurfrules` file. Windsurf has no multi-file or frontmatter support:
-
-```markdown
-<body of project.md>
-
----
-
-<body of general/code-style.md>
-
----
-
-<!-- … repeat for each cloned rule … -->
-```
-
----
-
 ## Final output
 
 After completing all steps, confirm to the user:
@@ -303,11 +261,9 @@ After completing all steps, confirm to the user:
 ✅ Cloned X rule files into .agents/rules/
 ✅ Created .agents/rules/project.md
 ✅ Generated IDE adapter files:
-   - CLAUDE.md               (Claude CLI — @-references)
-   - AGENTS.md               (other agents — inlined)
+   - CLAUDE.md               (Claude CLI — @file annotations only)
    - .github/copilot-instructions.md + instructions/*.instructions.md  (Copilot)
    - .cursor/rules/*.mdc     (Cursor)
-   - .windsurfrules          (Windsurf — inlined)
 
 Rules included:
 - general: code-style, git, security, testing, tooling, scaffolding, workflow<, monorepo>
@@ -358,7 +314,7 @@ rm -rf _tmp
 
 ### 7c. Regenerate all IDE adapter files
 
-With the updated rule files in place, regenerate every IDE adapter file following the same logic as Step 5 (5a through 5e). Overwrite the existing files completely — do not merge or diff.
+With the updated rule files in place, regenerate every IDE adapter file following the same logic as Step 5 (5a through 5c). Overwrite the existing files completely — do not merge or diff.
 
 `project.md` is never overwritten.
 
@@ -368,8 +324,6 @@ With the updated rule files in place, regenerate every IDE adapter file followin
 ✅ Updated X rule files in .agents/rules/ (project.md preserved)
 ✅ Regenerated IDE adapter files:
    - CLAUDE.md
-   - AGENTS.md
    - .github/copilot-instructions.md + instructions/
    - .cursor/rules/
-   - .windsurfrules
 ```
