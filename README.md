@@ -91,6 +91,13 @@ This manifest is used by the scaffolding skill to select and fetch rules.
       "always": true
     },
     {
+      "id": "general-workflow",
+      "file": "general/workflow.md",
+      "category": "general",
+      "tags": ["workflow", "agent", "planning", "documentation", "todo"],
+      "always": true
+    },
+    {
       "id": "general-monorepo",
       "file": "general/monorepo.md",
       "category": "general",
