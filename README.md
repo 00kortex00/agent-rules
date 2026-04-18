@@ -34,6 +34,7 @@ curl -o .agents/rules/general/code-style.md \
 general/     # Language and tooling rules — apply to every project
 frontend/    # React, state management, component architecture
 backend/     # Elysia, Drizzle, API design, project structure
+design/      # Design tool workflows — Pencil.dev file structure, tokens, AI prompt workflow
 ```
 
 ---
@@ -160,6 +161,14 @@ This manifest is used by the scaffolding skill to select and fetch rules.
       "tags": ["api", "rest", "errors", "responses"],
       "always": false,
       "when": "backend"
+    },
+    {
+      "id": "design-pencil-dev",
+      "file": "design/pencil-dev.md",
+      "category": "design",
+      "tags": ["pencil-dev", "design", "ui", "tokens", "auto-layout", "components"],
+      "always": false,
+      "when": "pencil-dev"
     }
   ]
 }
@@ -180,6 +189,7 @@ This manifest is used by the scaffolding skill to select and fetch rules.
 | `elysia` | Backend framework is Elysia |
 | `drizzle` | Project uses Drizzle ORM |
 | `monorepo` | Project is a monorepo |
+| `pencil-dev` | Project uses Pencil.dev for design |
 
 ---
 
