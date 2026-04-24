@@ -35,6 +35,7 @@ general/     # Language and tooling rules — apply to every project
 frontend/    # React, state management, component architecture
 backend/     # Elysia, Drizzle, API design, project structure
 design/      # Design tool workflows — Pencil.dev file structure, tokens, AI prompt workflow
+skills/      # Reusable agent skills (scaffolding, init, etc.)
 ```
 
 ---
@@ -53,7 +54,7 @@ This manifest is used by the scaffolding skill to select and fetch rules.
       "id": "general-code-style",
       "file": "general/code-style.md",
       "category": "general",
-      "tags": ["typescript", "code-style", "naming", "functions", "errors"],
+      "tags": ["typescript", "code-style", "naming", "functions", "errors", "deprecated"],
       "always": true
     },
     {
@@ -95,8 +96,16 @@ This manifest is used by the scaffolding skill to select and fetch rules.
       "id": "general-workflow",
       "file": "general/workflow.md",
       "category": "general",
-      "tags": ["workflow", "agent", "planning", "documentation", "todo"],
+      "tags": ["workflow", "agent", "planning", "documentation", "todo", "reporting"],
       "always": true
+    },
+    {
+      "id": "general-git-autocommit",
+      "file": "general/git-autocommit.md",
+      "category": "general",
+      "tags": ["git", "commits", "agent", "workflow"],
+      "always": false,
+      "when": "git-autocommit"
     },
     {
       "id": "general-monorepo",
@@ -190,6 +199,7 @@ This manifest is used by the scaffolding skill to select and fetch rules.
 | `drizzle` | Project uses Drizzle ORM |
 | `monorepo` | Project is a monorepo |
 | `pencil-dev` | Project uses Pencil.dev for design |
+| `git-autocommit` | Agent should auto-commit after each completed step |
 
 ---
 
