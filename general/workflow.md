@@ -59,7 +59,29 @@ After completing every task, provide a concise report in the following format:
 
 Do not skip this report even for small tasks. If there were no notable decisions or problems, write "none" in those sections rather than omitting them.
 
-## 6. Answering "Why" and "How" Questions
+## 6. Abstract Task Pre-Announcement
+
+When the user gives a **high-level, abstract task** — one that does not specify exactly which files to touch or which code to write (e.g. "replace SQLite with PGLite", "add dark mode", "migrate to a monorepo") — the agent MUST post a short plan in chat **before** executing anything.
+
+The plan must cover:
+- What the task entails (what changes will be made at a high level)
+- Which areas/files/systems will be affected
+- The order of steps
+
+Format:
+```
+## Plan: <task name>
+
+1. <step 1 — what and where>
+2. <step 2 — what and where>
+...
+```
+
+Only after posting the plan should the agent begin execution. Do NOT ask the user for approval unless the plan involves something risky or irreversible — just announce it and proceed.
+
+This rule does NOT apply when the user gives a concrete instruction ("in `db.ts` line 42, change X to Y") — proceed directly in that case.
+
+## 7. Answering "Why" and "How" Questions
 
 When the user asks an exploratory question — "why was this done this way?", "what is this for?", "how does X work?", "could we do this differently?" — do NOT immediately start editing or rewriting code.
 
