@@ -90,15 +90,16 @@ Do not put server data into Zustand — that is TanStack Query's job.
 
 ## Forms
 
-Use [TanStack Form](https://tanstack.com/form) for form state management. Validate with [Valibot](https://valibot.dev/):
+Use [TanStack Form](https://tanstack.com/form) for form state management. Validate with [TypeBox](https://github.com/sinclairzx81/typebox):
 
 ```tsx
 import { useForm } from "@tanstack/react-form"
-import * as v from "valibot"
+import { Type } from "@sinclair/typebox"
+import { Value } from "@sinclair/typebox/value"
 
-const LoginSchema = v.object({
-  email: v.pipe(v.string(), v.email()),
-  password: v.pipe(v.string(), v.minLength(8)),
+const LoginSchema = Type.Object({
+  email: Type.String({ format: "email" }),
+  password: Type.String({ minLength: 8 }),
 })
 
 export const LoginForm = () => {
@@ -106,8 +107,8 @@ export const LoginForm = () => {
     defaultValues: { email: "", password: "" },
     validators: {
       onChange: ({ value }) => {
-        const result = v.safeParse(LoginSchema, value)
-        if (!result.success) return result.issues[0].message
+        const errors = [...Value.Errors(LoginSchema, value)]
+        if (errors.length > 0) return errors[0].message
       },
     },
     onSubmit: async ({ value }) => {
@@ -139,4 +140,4 @@ export const LoginForm = () => {
 | Component-local UI state | `useState` / `useReducer` |
 | Server data (fetch, cache, sync) | TanStack Query |
 | Global UI state (modals, prefs) | Zustand |
-| Form state | TanStack Form + Valibot |
+| Form state | TanStack Form + TypeBox |
