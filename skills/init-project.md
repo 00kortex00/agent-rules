@@ -91,7 +91,7 @@ If frontend:
 
 If backend:
 - Which framework? (default: Elysia — mention this)
-- Database? (default: Drizzle + PostgreSQL — mention this)
+- Database? (default: Drizzle + PGLite for local / PostgreSQL for production — mention this; explain that PGLite runs in-process with no local Postgres needed, and automatically switches to real Postgres when `DATABASE_URL` is set)
 
 **Always ask:**
 - Should the agent **auto-commit** after each completed step? (default: no — mention this, explain it means one commit per TODO step, local only, no push)
